@@ -367,31 +367,3 @@ Planned possibilities include:
 
 ⸻
 
-📌 Project Status
-
-🚧 In Development
-
-NOVA is being built as a full-stack exploration of:
-
-3D Web + EV Technology + Maps + Motion Design + UX + Full-Stack Development
-
-The goal is to create something that isn’t just functional, but genuinely enjoyable to explore.
-
-⸻
-
-👨‍💻 About
-
-RITISH S
-
-Computer Science Engineering
-UI/UX Designer • Frontend Developer
-
-NOVA is a project built to explore how technology, interaction, and visual storytelling can come together to solve a real-world problem.
-
-⸻
-
-⚡ NOVA
-
-Find Power. Anywhere.
-
-Explore the world. Find your charger. Keep moving.
