@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 42 36% 95%;
+    --foreground: 30 9% 8%;
+  }
+
+  body {
+    background-color: #F7F3EC;
+    color: #171513;
+    font-family: var(--font-manrope), sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sora), sans-serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Subtle luxury grain/noise background */
+.nova-noise-bg {
+  background-color: #F7F3EC;
+  background-image: radial-gradient(rgba(110, 103, 95, 0.05) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Editorial Hero Typography Spec */
+.hero-headline {
+  font-family: var(--font-sora), sans-serif;
+  font-size: clamp(52px, 8.5vw, 140px);
+  line-height: 0.88;
+  letter-spacing: -0.06em;
+  font-weight: 700;
+  color: #171513;
+}
+
+/* Custom minimal scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F7F3EC;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E8DDCC;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A78663;
+}
+
+/* Leaflet Custom Marker & Map Tweaks */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  background-color: #F7F3EC !important;
+  font-family: var(--font-manrope), sans-serif !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #FFFFFF !important;
+  color: #171513 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 30px rgba(23, 21, 19, 0.12) !important;
+  padding: 4px !important;
+}
+
+.leaflet-popup-tip {
+  background: #FFFFFF !important;
+}
+
+/* Glass & Surface Effects */
+.nova-card {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(232, 221, 204, 0.6);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(23, 21, 19, 0.03);
+  transition: all 0.25s ease-out;
+}
+
+.nova-card:hover {
+  border-color: #A78663;
+  box-shadow: 0 8px 30px rgba(23, 21, 19, 0.07);
+}
+
+.nova-badge-live {
+  background-color: #E8EFE5;
+  color: #4A7C59;
+  border: 1px solid rgba(74, 124, 89, 0.3);
+}
+
+.nova-badge-demo {
+  background-color: #FAF4E8;
+  color: #C87D32;
+  border: 1px solid rgba(200, 125, 50, 0.3);
+}

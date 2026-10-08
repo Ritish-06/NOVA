@@ -1,0 +1,256 @@
+// Prisma Schema for NOVA Global EV Charging Network
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum StationStatus {
+  AVAILABLE
+  BUSY
+  UNAVAILABLE
+  OUT_OF_SERVICE
+  UNKNOWN
+}
+
+enum ConnectorType {
+  CCS2
+  TYPE_2
+  CHADEMO
+  NACS
+}
+
+enum DataSourceType {
+  LIVE
+  DEMO
+  STATIC
+}
+
+enum SessionStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id            String            @id @default(uuid())
+  email         String            @unique
+  passwordHash  String
+  name          String
+  role          Role              @default(USER)
+  avatarUrl     String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  vehicles      Vehicle[]
+  favorites     FavoriteStation[]
+  tripPlans     TripPlan[]
+  sessions      ChargingSession[]
+  notifications Notification[]
+  auditLogs     AuditLog[]
+}
+
+model Vehicle {
+  id                 String        @id @default(uuid())
+  userId             String
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  brand              String
+  model              String
+  batteryCapacityKwh Float
+  rangeKm            Float
+  connectorType      ConnectorType
+  maxChargeRateKw    Float
+  isDefault          Boolean       @default(false)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@index([userId])
+}
+
+model ChargingNetwork {
+  id                 String            @id @default(uuid())
+  name               String            @unique
+  operator           String
+  coverageCountries  String[]
+  stationCount       Int               @default(0)
+  fastChargerCount   Int               @default(0)
+  connectorTypes     ConnectorType[]
+  maxPowerKw         Float
+  supportPhone       String?
+  website            String?
+  stations           ChargingStation[]
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+}
+
+model ChargingStation {
+  id            String              @id @default(uuid())
+  name          String
+  operator      String
+  networkId     String
+  network       ChargingNetwork     @relation(fields: [networkId], references: [id])
+  latitude      Float
+  longitude     Float
+  country       String
+  city          String
+  address       String
+  openingHours  String              @default("24/7 Open")
+  status        StationStatus       @default(AVAILABLE)
+  amenities     String[]
+  rating        Float               @default(4.8)
+  reviewsCount  Int                 @default(0)
+  dataSource    DataSourceType      @default(LIVE)
+  providerName  String              @default("OpenChargeMap Adapter")
+  lastUpdated   DateTime            @default(now())
+  connectors    ChargingConnector[]
+  availabilities StationAvailability[]
+  pricings      StationPricing[]
+  favorites     FavoriteStation[]
+  sessions      ChargingSession[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([city, country])
+  @@index([latitude, longitude])
+  @@index([status])
+}
+
+model ChargingConnector {
+  id            String              @id @default(uuid())
+  stationId     String
+  station       ChargingStation     @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  type          ConnectorType
+  powerKw       Float
+  status        StationStatus       @default(AVAILABLE)
+  pricePerKwh   Float
+  currency      String              @default("USD")
+  sessionFee    Float?              @default(0)
+  availabilities StationAvailability[]
+  sessions      ChargingSession[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([stationId])
+  @@index([status])
+}
+
+model StationAvailability {
+  id          String            @id @default(uuid())
+  stationId   String
+  station     ChargingStation   @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  connectorId String?
+  connector   ChargingConnector? @relation(fields: [connectorId], references: [id])
+  status      StationStatus
+  timestamp   DateTime          @default(now())
+  source      String
+
+  @@index([stationId, timestamp])
+}
+
+model StationPricing {
+  id          String          @id @default(uuid())
+  stationId   String
+  station     ChargingStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  pricePerKwh Float
+  currency    String
+  source      String
+  lastUpdated DateTime        @default(now())
+}
+
+model ChargingSession {
+  id          String            @id @default(uuid())
+  userId      String
+  user        User              @relation(fields: [userId], references: [id])
+  stationId   String
+  station     ChargingStation   @relation(fields: [stationId], references: [id])
+  connectorId String
+  connector   ChargingConnector @relation(fields: [connectorId], references: [id])
+  startedAt   DateTime          @default(now())
+  endedAt     DateTime?
+  energyKwh   Float             @default(0)
+  cost        Float             @default(0)
+  currency    String            @default("USD")
+  status      SessionStatus     @default(PENDING)
+  createdAt   DateTime          @default(now())
+}
+
+model FavoriteStation {
+  id        String          @id @default(uuid())
+  userId    String
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stationId String
+  station   ChargingStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  createdAt DateTime        @default(now())
+
+  @@unique([userId, stationId])
+}
+
+model TripPlan {
+  id                     String     @id @default(uuid())
+  userId                 String
+  user                   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  origin                 String
+  destination            String
+  estimatedDistanceKm    Float
+  estimatedDriveTimeMins Int
+  totalChargeTimeMins    Int
+  totalCost              Float
+  currency               String     @default("USD")
+  stops                  TripStop[]
+  createdAt              DateTime   @default(now())
+}
+
+model TripStop {
+  id                   String   @id @default(uuid())
+  tripPlanId           String
+  tripPlan             TripPlan @relation(fields: [tripPlanId], references: [id], onDelete: Cascade)
+  stationId            String
+  stationName          String
+  latitude             Float
+  longitude            Float
+  arrivalBatteryPct    Float
+  departureBatteryPct  Float
+  chargeTimeMins       Int
+  energyAddedKwh       Float
+  cost                 Float
+  currency             String
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  type      String
+  createdAt DateTime @default(now())
+}
+
+model DataProvider {
+  id               String   @id @default(uuid())
+  name             String   @unique
+  adapterClassName String
+  sourceType       DataSourceType
+  status           String   @default("ACTIVE")
+  latencyMs        Int      @default(45)
+  lastSyncAt       DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  details   String
+  ipAddress String?
+  createdAt DateTime @default(now())
+}
