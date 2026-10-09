@@ -1,5 +1,7 @@
 # NOVA
-⚡ NOVA — Find Power. Anywhere.
+⚡ **NOVA — Find Power. Anywhere.**
+
+🚀 **Live App**: [https://nova-ev-seven.vercel.app](https://nova-ev-seven.vercel.app)
 
 What if finding an EV charger felt less like searching a map and more like exploring the world?
 
@@ -13,7 +15,14 @@ The goal isn’t just to find a charger.
 
 It’s to make the journey to finding one feel effortless.
 
-⸻
+---
+
+### 🌐 Live Demo & Deployment
+- **Production URL**: [https://nova-ev-seven.vercel.app](https://nova-ev-seven.vercel.app)
+- **Hosted on**: Vercel
+- **GitHub Repository**: [https://github.com/Ritish-06/NOVA](https://github.com/Ritish-06/NOVA)
+
+---
 
 🌍 Start With the World
 
